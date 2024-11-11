@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tradutor com Azure Translator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #74b9ff, #a29bfe);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #2d3436;
+        }
+
+        .container {
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 600px;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #2d3436;
+            margin-bottom: 1rem;
+        }
+
+        label {
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            display: block;
+            color: #2d3436;
+            text-align: left;
+        }
+
+        textarea, select, button {
+            width: 100%;
+            padding: 0.8rem;
+            margin-top: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            outline: none;
+            transition: border 0.3s ease-in-out;
+        }
+
+        textarea:focus, select:focus, button:focus {
+            border-color: #74b9ff;
+        }
+
+        button {
+            background-color: #74b9ff;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0984e3;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-top: 2rem;
+            color: #2d3436;
+        }
+
+        #translatedText {
+            font-size: 1.2rem;
+            margin-top: 0.5rem;
+            color: #0984e3;
+            padding: 1rem;
+            background-color: #f6f6f6;
+            border-radius: 8px;
+            min-height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 1rem;
+                width: 90%;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Tradutor com Azure Translator</h1>
+        <form id="translationForm">
+            <label for="text">Texto a ser traduzido:</label>
+            <textarea id="text" name="text" rows="4" required></textarea>
+
+            <label for="to_language">Idioma de destino:</label>
+            <select id="to_language" name="to_language">
+                <option value="en">Inglês</option>
+                <option value="es">Espanhol</option>
+                <option value="fr">Francês</option>
+                <option value="de">Alemão</option>
+                <option value="it">Italiano</option>
+            </select>
+
+            <button type="button" onclick="translateText()">Traduzir</button>
+        </form>
+
+        <h2>Tradução:</h2>
+        <p id="translatedText">Aqui aparecerá o texto traduzido.</p>
+    </div>
+
+    <script>
+        async function translateText() {
+            const text = document.getElementById("text").value;
+            const toLanguage = document.getElementById("to_language").value;
+
+            try {
+                const response = await fetch('/translate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ text, to_language: toLanguage })
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    document.getElementById("translatedText").innerText = result.translated_text;
+                } else {
+                    document.getElementById("translatedText").innerText = "Erro: " + result.error;
+                }
+            } catch (error) {
+                document.getElementById("translatedText").innerText = "Erro de conexão.";
+            }
+        }
+    </script>
+</body>
+</html>
